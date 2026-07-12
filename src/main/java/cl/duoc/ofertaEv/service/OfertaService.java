@@ -8,18 +8,12 @@ import org.springframework.stereotype.Service;
 
 import cl.duoc.ofertaEv.model.Oferta;
 import cl.duoc.ofertaEv.repository.OfertaRepository;
-import org.springframework.web.reactive.function.client.WebClient;
-import cl.duoc.ofertaEv.dto.SubastaResponse;
-
 
 @Service
 public class OfertaService {
 
     @Autowired
     private OfertaRepository ofertaRepository;
-
-    @Autowired    
-    private WebClient subastaWebClient;
 
     public List<Oferta> getAllOfertas() {
         return ofertaRepository.findAll();
@@ -30,25 +24,6 @@ public class OfertaService {
     }
 
     public Oferta guardarOferta(Oferta oferta) {
-
-        try {
-            SubastaResponse subasta = subastaWebClient.get()
-                    .uri("/{id}", oferta.getIdSubasta())
-                    .retrieve()
-                    .bodyToMono(SubastaResponse.class)
-                    .block();
-
-            if (subasta == null) {
-                return null;
-            }
-
-            if (!subasta.estado().equalsIgnoreCase("ABIERTA")) {
-                return null;
-            }
-
-        } catch (Exception e) {
-            return null;
-        }
 
         oferta.setEstado("PENDIENTE");
 
